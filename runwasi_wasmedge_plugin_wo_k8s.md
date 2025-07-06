@@ -3,7 +3,7 @@
 ## 1. Install dependencies
 ```sh
 # step 0 - installing dependencies
-sudo apt update && sudo apt upgrade -y && sudo apt install -y llvm-14-dev liblld-14-dev software-properties-common gcc g++ asciinema containerd cmake zlib1g-dev build-essential python3 python3-dev python3-pip git clang
+sudo apt update && sudo apt upgrade -y && sudo apt install -y llvm-14-dev liblld-14-dev software-properties-common gcc g++ asciinema containerd cmake zlib1g-dev build-essential python3 python3-dev python3-pip git clang crun
 
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y && source $HOME/.cargo/env
 rustup target add wasm32-wasip1 # wasm32-wasip1 specifies that at the end, binary is to be of wasm type
@@ -25,11 +25,12 @@ make build-wasmedge
 
 # placing the binary(wasmedge shim files) in the right place
 INSTALL="sudo install" LN="sudo ln -sf" make install-wasmedge
+# maybe equivalent to :
+sudo install ./target/aarch64-unknown-linux-gnu/debug/containerd-shim-wasmedge-v1 /usr/local/bin/
 
 # configuring containerd to run wasm applications instead of traditional containers
 sudo mkdir -p /etc/containerd
 mkdir -p /usr/local/bin
-sudo install ./target/aarch64-unknown-linux-gnu/debug/containerd-shim-wasmedge-v1 /usr/local/bin/
 containerd config default | sudo tee /etc/containerd/config.toml >/dev/null
 sudo sed -i '/\[plugins\."io\.containerd\.grpc\.v1\.cri"\.containerd\.runtimes\]/a \
   [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.wasmedge]\
@@ -151,9 +152,8 @@ git -C apps/llamaedge apply $PWD/disable_wasi_logging.patch
 
 ```bash
 OPT_PROFILE=release RUSTFLAGS="--cfg wasmedge --cfg tokio_unstable" make apps/llamaedge/llama-api-server
-
-# place image in containerd's local store
-sudo ctr -n default image import --all-platforms apps/llamaedge/llama-api-server/target/wasm32-wasip1/release/img-oci.tar
+# above command also places this image in containerd's local store - equivalent to this :
+# sudo ctr -n default image import --all-platforms apps/llamaedge/llama-api-server/target/wasm32-wasip1/release/img-oci.tar
 
 # verify
 sudo ctr images ls 
@@ -167,8 +167,9 @@ sudo ctr images ls
 
 ```bash
 curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/install.sh | bash -s -- --plugins wasi_nn-ggml -v 0.14.1
-./inject_dependencise.sh ~/.wasmedge/plugin/libwasmedgePluginWasiNN.so /opt/containerd/lib
 source $HOME/.bashrc
+
+./inject_dependencise.sh ~/.wasmedge/plugin/libwasmedgePluginWasiNN.so /opt/containerd/lib
 ```
 
 4. Download LLM model

@@ -19,17 +19,17 @@ k3s uses its own containerd which comes bundled with it
 # check out-of-the-box default runtime
 sudo crictl info | grep -A 10 "defaultRuntime"
 # o/p :
-      "defaultRuntimeName": "runc",
-      "ignoreBlockIONotEnabledErrors": false,
-      "ignoreRdtNotEnabledErrors": false,
-      "runtimes": {
-        "crun": {
-          "ContainerAnnotations": null,
-          "PodAnnotations": null,
-          "baseRuntimeSpec": "",
-          "cniConfDir": "",
-          "cniMaxConfNum": 0,
-          "io_type": "",
+      # "defaultRuntimeName": "runc",
+      # "ignoreBlockIONotEnabledErrors": false,
+      # "ignoreRdtNotEnabledErrors": false,
+      # "runtimes": {
+      #   "crun": {
+      #     "ContainerAnnotations": null,
+      #     "PodAnnotations": null,
+      #     "baseRuntimeSpec": "",
+      #     "cniConfDir": "",
+      #     "cniMaxConfNum": 0,
+      #     "io_type": "",
 
 # configure k3s own containerd (k3s comes bundled with its own plugin)
 sudo chmod 777 -R /var
@@ -91,20 +91,23 @@ state = "/run/k3s/containerd"
   config_path = "/var/lib/rancher/k3s/agent/etc/containerd/certs.d"
 EOF
 
-# check out-of-the-box default runtime
+# Restart k3s
+sudo systemctl restart k3s
+
+# check default runtime now
 sudo crictl info | grep -A 10 "defaultRuntime"
 # o/p :
-      "defaultRuntimeName": "crun",
-      "ignoreBlockIONotEnabledErrors": false,
-      "ignoreRdtNotEnabledErrors": false,
-      "runtimes": {
-        "crun": {
-          "ContainerAnnotations": null,
-          "PodAnnotations": null,
-          "baseRuntimeSpec": "",
-          "cniConfDir": "",
-          "cniMaxConfNum": 0,
-          "io_type": "",
+      # "defaultRuntimeName": "crun",
+      # "ignoreBlockIONotEnabledErrors": false,
+      # "ignoreRdtNotEnabledErrors": false,
+      # "runtimes": {
+      #   "crun": {
+      #     "ContainerAnnotations": null,
+      #     "PodAnnotations": null,
+      #     "baseRuntimeSpec": "",
+      #     "cniConfDir": "",
+      #     "cniMaxConfNum": 0,
+      #     "io_type": "",
 ```
 
 ### *References* - 

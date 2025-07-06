@@ -42,14 +42,12 @@ make build-wasmedge
 
 # install system-wide
 INSTALL="sudo install" LN="sudo ln -sf" make install-wasmedge
-
-# . . . continue with wasmedge-runwani-kind-song-demo.md from here. . .
+# maybe equivalent to : 
+mkdir -p /usr/local/bin
+sudo install ./target/aarch64-unknown-linux-gnu/debug/containerd-shim-wasmedge-v1 /usr/local/bin/
 
 # configure containerd for runwasi's wasmedge shim
 sudo mkdir -p /etc/containerd
-
-mkdir -p /usr/local/bin
-sudo install ./target/aarch64-unknown-linux-gnu/debug/containerd-shim-wasmedge-v1 /usr/local/bin/
 
 containerd config default | sudo tee /etc/containerd/config.toml >/dev/null
 
@@ -61,19 +59,18 @@ sudo sed -i '/\[plugins\."io\.containerd\.grpc\.v1\.cri"\.containerd\.runtimes\]
 # Verify Correct Config
 sudo cat /etc/containerd/config.toml | grep -A 3 "wasmedge"
 
-
 # Test the Runwasi's WasmEdge shim
 
 # stop-start containerd
 sudo systemctl stop containerd
 sudo systemctl start containerd
 
-# Pull and Run the Song image
+# Test the setup - Pull and Run the Song image
 cd
 
 sudo ctr images pull ghcr.io/containerd/runwasi/wasi-demo-app:latest
 
-sudo ctr run --rm --runtime=io.containerd.wasmedge.v1 \
+sudo k3s ctr run --rm --runtime=io.containerd.wasmedge.v1 \
   ghcr.io/containerd/runwasi/wasi-demo-app:latest \
   testwasm
 

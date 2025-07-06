@@ -51,6 +51,8 @@ sudo apt-get install -y kubectl
 curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.27.0/kind-linux-arm64
 chmod +x ./kind
 sudo mv ./kind /usr/local/bin/
+# to uninstall:
+# sudo rm -fr /usr/local/bin/kind
 
 # Verify installation
 kind version
