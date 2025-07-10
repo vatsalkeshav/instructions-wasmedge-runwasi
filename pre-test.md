@@ -70,7 +70,7 @@ cd
 
 sudo ctr images pull ghcr.io/containerd/runwasi/wasi-demo-app:latest
 
-sudo k3s ctr run --rm --runtime=io.containerd.wasmedge.v1 \
+sudo ctr run --rm --runtime=io.containerd.wasmedge.v1 \
   ghcr.io/containerd/runwasi/wasi-demo-app:latest \
   testwasm
 

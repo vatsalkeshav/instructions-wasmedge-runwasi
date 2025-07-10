@@ -38,6 +38,11 @@ state = "/run/k3s/containerd"
 
 [plugins.'io.containerd.cri.v1.runtime'.containerd.runtimes.runhcs-wcow-process]
   runtime_type = "io.containerd.runhcs.v1"
+# [plugins.'io.containerd.cri.v1.runtime'.containerd.runtimes.'crun']
+#   runtime_type = "io.containerd.runc.v2"
+# [plugins.'io.containerd.cri.v1.runtime'.containerd.runtimes.'crun'.options]
+#   BinaryName = "/usr/local/bin/crun"
+#   SystemdCgroup = true
 
 [plugins."io.containerd.cri.v1.runtime".containerd]
   default_runtime_name = "crun"
@@ -47,17 +52,13 @@ state = "/run/k3s/containerd"
       [plugins."io.containerd.cri.v1.runtime".containerd.runtimes.crun.options]
         BinaryName = "/usr/local/bin/crun"
         SystemdCgroup = true
-    [plugins."io.containerd.cri.v1.runtime".containerd.runtimes.wasm]
-      runtime_type = "io.containerd.wasmedge.v1"
-      pod_annotations = ["*.wasm.*", "wasm.*", "module.wasm.image/*", "*.module.wasm.image", "module.wasm.image/variant.*"]
-    [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.wasmedge]
-      runtime_type = "io.containerd.wasmedge.v1"
-      privileged_without_host_devices = true
-      pod_annotations = ["*.wasm.*", "wasm.*", "module.wasm.image/*", "*.module.wasm.image", "module.wasm.image/variant.*"]
 
-[plugins."io.containerd.runtime.v1.linux"]
-  shim = "containerd-shim-wasmedge-v1"
+[plugins.'io.containerd.cri.v1.runtime'.containerd.runtimes.'wasmedge']
+  runtime_type = "io.containerd.wasmedge.v1"
+
+[plugins.'io.containerd.cri.v1.runtime'.containerd.runtimes.'wasmedge'.options]
+  BinaryName = "/usr/local/bin/containerd-shim-wasmedge-v1"
+  SystemdCgroup = true
 
 [plugins.'io.containerd.cri.v1.images'.registry]
   config_path = "/var/lib/rancher/k3s/agent/etc/containerd/certs.d"
-

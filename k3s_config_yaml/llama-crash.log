@@ -1,5 +1,0 @@
-[2025-07-05 14:49:36.543] [error] instantiation failed: unknown import, Code: 0x302
-[2025-07-05 14:49:36.543] [error]     When linking module: "wasi_ephemeral_nn" , function name: "compute"
-[2025-07-05 14:49:36.543] [error]     At AST node: import description
-[2025-07-05 14:49:36.543] [error]     At AST node: import section
-[2025-07-05 14:49:36.543] [error]     At AST node: module
