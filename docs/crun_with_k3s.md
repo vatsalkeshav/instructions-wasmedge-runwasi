@@ -1,5 +1,9 @@
 # Steps to use crun as default k3s' OCI runtime instead of runc
 
+k3s uses its own containerd which comes bundled with it
+  - So, don't install containerd any other way if stricly needed
+  - it can be accessed using `k3s ctr` or just `ctr`
+
 ### 1. *First install crun, then k3s*
 this saves time - as k3s recognizes crun as a runtime upon installation only
 
@@ -12,7 +16,7 @@ sudo apt install -y crun
 curl -sfL https://get.k3s.io | sh - 
 ```
 
-### 2. *Configure k3s' containerd's config to deffault to crun as OCI runtime*
+### 2. *Configure k3s' containerd's config to default to crun as OCI runtime*
 k3s uses its own containerd which comes bundled with it
  
 ```sh

@@ -1,9 +1,9 @@
-# Running `github.com/second-state/runwasi-wasmedge-demo` in k3s environment
+# Running `github.com/second-state/runwasi-wasmedge-demo` in k3s
 
 ### 1. Installing dependencies 
 ```sh
 # deps - apt
-sudo apt update && sudo apt upgrade -y && sudo apt install -y llvm-14-dev liblld-14-dev software-properties-common gcc g++ asciinema containerd cmake zlib1g-dev build-essential python3 python3-dev python3-pip git clang
+sudo apt update && sudo apt upgrade -y && sudo apt install -y llvm-14-dev liblld-14-dev software-properties-common gcc g++ asciinema cmake zlib1g-dev build-essential python3 python3-dev python3-pip git clang
 
 # deps - rust
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y && source $HOME/.cargo/env
@@ -14,7 +14,7 @@ exec $SHELL
 curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/install.sh | bash -s -- --plugins wasi_nn-ggml -v 0.14.1 # binaries and plugin in $HOME/.wasmedge
 source $HOME/.bashrc
 
-# deps - crun with wasedge support
+# deps - crun with wasmedge support
 sudo apt update
 sudo apt install -y make git gcc build-essential pkgconf libtool \
     libsystemd-dev libprotobuf-c-dev libcap-dev libseccomp-dev libyajl-dev \
@@ -34,7 +34,6 @@ cd runwasi
 ./scripts/setup-linux.sh
 make build-wasmedge
 INSTALL="sudo install" LN="sudo ln -sf" make install-wasmedge
-
 
 # deps - k3s installation
 cd
@@ -140,79 +139,10 @@ git clone --recurse-submodules https://github.com/second-state/runwasi-wasmedge-
 cd runwasi-wasmedge-demo
 
 # edit makefile to eliminate containerd version error
-rm -fr Makefile
-touch Makefile
-sudo tee ./Makefile > /dev/null <<'EOF'
-CONTAINERD_NAMESPACE ?= default
-LLAMAEDGE_SERVICE = llama-api-server # apps/llamaedge/llama-api-server 
-
-OPT_PROFILE ?= debug
-RELEASE_FLAG :=
-ifeq ($(OPT_PROFILE),release)
-RELEASE_FLAG = --release
-endif
-
-define CHECK_RUST_TOOLS
-	@command -v cargo-get >/dev/null 2>&1 || { \
-		echo "cargo-get not found, installing..."; \
-		cargo install cargo-get; \
-	}
-	@command -v oci-tar-builder >/dev/null 2>&1 || { \
-		echo "oci-tar-builder not found, installing..."; \
-		cargo install oci-tar-builder; \
-	}
-endef
-
-# define CHECK_CONTAINERD_VERSION
-# 	@CTR_VERSION=$$(sudo ctr version | sed -n -e '/Version/ {s/.*: *//p;q;}'); \
-# 	if ! printf '%s\n%s\n%s\n' "$$CTR_VERSION" "v1.7.7" "v1.6.25" | sort -V | tail -1 | grep -qx "$$CTR_VERSION"; then \
-# 		echo "Containerd version must be v1.7.7+ or v1.6.25+, but detected $$CTR_VERSION"; \
-# 		exit 1; \
-# 	fi
-# endef
-
-define CHECK_CONTAINERD_VERSION
-	@CTR_VERSION=$$(sudo ctr version | sed -n -e '/Version/ {s/.*: *//p;q;}'); \
-	if ! printf '%s\n%s\n%s\n' "$$CTR_VERSION" "v1.7.7" "v1.6.25" | sort -V | tail -1 | grep -qx "$$CTR_VERSION"; then \
-		echo "WARNING: Containerd version should be v1.7.7+ or v1.6.25+, but detected $$CTR_VERSION"; \
-	fi
-endef
-
-.PHONY: .FORCE
-.FORCE:
-
-%.wasm: .FORCE
-	@PACKAGE_PATH=$(firstword $(subst /target/, ,$@)) && \
-	echo "Build WASM from $$PACKAGE_PATH" && \
-	cd $$PACKAGE_PATH && cargo build --target-dir ./target --target=wasm32-wasip1 $(RELEASE_FLAG)
-
-apps/%/img-oci.tar: apps/%/*.wasm
-	$(CHECK_RUST_TOOLS)
-	@PACKAGE_PATH=$(firstword $(subst /target/, ,$@)) && \
-	PACKAGE_NAME=$$(cd $$PACKAGE_PATH && cargo-get package.name) && \
-	echo "Build OCI image from $$PACKAGE_PATH" && \
-	cd $$PACKAGE_PATH && \
-	oci-tar-builder --name $$PACKAGE_NAME --repo ghcr.io/second-state --tag latest --module target/wasm32-wasip1/$(OPT_PROFILE)/$$PACKAGE_NAME.wasm -o target/wasm32-wasip1/$(OPT_PROFILE)/img-oci.tar
-
-.DEFAULT_GOAL := all
-all: $(LLAMAEDGE_SERVICE)/target/wasm32-wasip1/$(OPT_PROFILE)/img-oci.tar
-	$(CHECK_CONTAINERD_VERSION)
-	$(foreach var,$^,\
-		sudo ctr -n $(CONTAINERD_NAMESPACE) image import --all-platforms $(var);\
-	)
-
-%: %/target/wasm32-wasip1/$(OPT_PROFILE)/img-oci.tar
-	$(CHECK_CONTAINERD_VERSION)
-	sudo ctr -n $(CONTAINERD_NAMESPACE) image import --all-platforms $<
-
-.PHONY: clean
-
-clean:
-	@echo "Remove all imported OCI images from Contained."
-	@sudo ctr image ls -q | grep '^ghcr.io/second-state' | xargs -n 1 sudo ctr images rm
-	@echo "Remove all built WASM files."
-	@find . -type d -name 'target' | xargs rm -rf
-EOF
+sed -i -e '/define CHECK_CONTAINERD_VERSION/,/^endef/{
+s/Containerd version must be/WARNING: Containerd version should be/
+/exit 1;/d
+}' Makefile
 
 git -C apps/llamaedge apply $PWD/disable_wasi_logging.patch
 OPT_PROFILE=release RUSTFLAGS="--cfg wasmedge --cfg tokio_unstable" make apps/llamaedge/llama-api-server
@@ -780,4 +710,5 @@ sudo k3s kubectl logs llama-api-server-d87d7b4dd-z24xv
 ```sh
 cd
 sudo k3s kubectl delete -f deployment.yaml
+
 ```

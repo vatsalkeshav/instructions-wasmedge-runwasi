@@ -1,6 +1,8 @@
-New Steps for Kind+Docker+kubectl+neverendingsong (following README.md)
+## Steps for Kind+Docker+kubectl+neverendingsong
 
-1. Docker
+> Please refer ./pre-test.md for basic environment setup
+
+### 1. Docker installation
 ```bash
 
 # Update/Install dependencies
@@ -29,10 +31,10 @@ sudo systemctl enable docker
 
 # reboot to rock effect
 sudo reboot
-orb
+sleep orb
 ```
 
-2. Kubctl
+### 2. Kubectl
 ```bash
 # Add Kubernetes repo
 sudo apt-get update
@@ -45,7 +47,7 @@ sudo apt-get update
 sudo apt-get install -y kubectl
 ```
 
-3. Kind
+### 3. Kind
 ```bash
 # Install Kind (Linux/arm64 binary)
 curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.27.0/kind-linux-arm64
