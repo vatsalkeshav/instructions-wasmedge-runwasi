@@ -53,7 +53,7 @@ This project demonstrates a real-world scenario as to how WASM workloads can eff
  - *__LlamaEdge writing AI servers to run on the edge (in Rust too!)__*
  - *__WasmEdge replacing traditional containers with WASM ones__*
 
-these are the 2 of the *biggest leaps in tech of our decade* and thanks to this mentorship program, I had the opportunity to work with them.
+these are the 2 of the *biggest leaps in tech of our decade* and thanks to this mentorship program, I had the opportunity to learn and work with them.
 
 ### __Future Work__
 The `service-watcher` from `load-bal-llamaedge-demo` is still run a non-WASM pod because it uses `kube-rs` and `k8s-opensapi` as dependencies which in turn depend on
@@ -76,3 +76,5 @@ My growth here is a reflection of your guidance - your support through challenge
 I'm also glad to have the opportunity to be a part of and be helped by the [WasmEdge](https://cloud-native.slack.com/archives/C0215BBK248/p1754502803786039) and [Runwasi](https://cloud-native.slack.com/archives/C04LTPB6Z0V/p1754502430462249) communities.
 
 Thanks [@hydai](https://github.com/hydai) for helping me with the dns resolution (:
+
+Above all, thanks Linux Foundation and CNCF.
