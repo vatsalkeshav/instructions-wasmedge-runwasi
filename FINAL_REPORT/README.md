@@ -11,6 +11,8 @@ Duration:      3 months (June 9, 2025 - August 29, 2025)
 
 ### __Overview__
 
+> __Tracking Issue__ : https://github.com/WasmEdge/WasmEdge/issues/4155
+
 *What was the motivation behind this project?*
 
 With WasmEdge serving as one of Runwasi’s standard runtimes, and as its C++-implemented library continues to evolve, there was a need for a verification process integrated into Runwasi to streamline and validate the stability of both container and cloud environments.
@@ -23,6 +25,7 @@ The project comprised of these steps - (which were also completed in the same or
  3. Confirm how the plugin system should be configured in a k8s environment — for example, environment variables or dynamic library (plugin and plugin dependencies) loading paths.
  4. Create a CI repository that we could use to verify the integration yourself and show results.
  5. For the creative aspect, explore how to integrate HTTP service and the plugin system in a multi-node setup. The goal was to showcase how this ecosystem can be effectively deployed in the cloud.
+
 
 ### __Deliverables__
 
@@ -62,12 +65,14 @@ all of which assume native sockets, threads, and system TLS (Refer cargo tree of
 While WasmEdge provides forks like `tokio-wasi`, `reqwest-wasi`, `hyper-wasi`, `socket` etc. - `kube-rs` has hard dependencies on the native crates, so they won’t link without patching `kube-rs` itself. Given this, running the watcher as a traditional pod seems more practical for now but there'd be nothing better if the service-watcher would complile to wasm32-wasip1 target.
 
 ### _Acknowledgements_
-```sh
+
+```
 “The mirror reflects not just your image, but the story of your strength, resilience, and grace.” 
 - Dalai Lama
 ```
-My growth here is a reflection of your guidance - your steady support through challenges and encouragement in successes - Thank you [Vincent Lin](https://github.com/CaptainVincent) and [Yi Huang](https://github.com/0yi0)
 
-I'm also glad to be a part of and to be helped by the [WasmEdge](https://cloud-native.slack.com/archives/C0215BBK248/p1754502803786039) and [Runwasi](https://cloud-native.slack.com/archives/C04LTPB6Z0V/p1754502430462249) communities.
+My growth here is a reflection of your guidance - your support through challenges and encouragement in successes - Thank you [Vincent Lin](https://github.com/CaptainVincent) and [Yi Huang](https://github.com/0yi0)
+
+I'm also glad to have the opportunity to be a part of and be helped by the [WasmEdge](https://cloud-native.slack.com/archives/C0215BBK248/p1754502803786039) and [Runwasi](https://cloud-native.slack.com/archives/C04LTPB6Z0V/p1754502430462249) communities.
 
 Thanks [@hydai](https://github.com/hydai) for helping me with the dns resolution (:
