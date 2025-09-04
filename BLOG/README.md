@@ -1,6 +1,8 @@
 # A journey  with __*k3s*__ through __*wasm32-wasip1*__
 ## _LFX Mentorship_ : __Use Runwasi with WasmEdge runtime to test multiple WASM apps as cloud services__
 
+By [@vatsalkeshav](https://github.com/vatsalkeshav)
+
 ### __Table of Content__
   - The Hook named WASM
   - The Fellowship
@@ -43,6 +45,8 @@ WASM's mostly used in Browsers (mostly for __client-side computing__) - as might
 _*I didn't know any of that when I applied for this project - but that's a story for another time. I knew some Rust though._
 
 ### __The Fellowship__
+_Always be part of a team, even when alone_
+
 I applied for this quest on the [LFX mentorship portal](https://mentorship.lfx.linuxfoundation.org/#projects_all), prepared the pre-test and this journey started. Me, [Rust](https://www.rust-lang.org/) and the wise mentors by my side - [Vincent Lin](https://github.com/CaptainVincent) and [Yi Huang](https://github.com/0yi0) - were the pilgrims.
 
 *What was the underlying motivation behind all this?*
@@ -56,7 +60,7 @@ With [WasmEdge](https://github.com/WasmEdge/WasmEdge) serving as one of [Runwasi
  5. For the creative aspect, exploring how to integrate HTTP service and the plugin system in a multi-node setup. The goal being to showcase how this ecosystem can be effectively deployed in the cloud.
 
 ### __The Forest__
-_This might seem easy to some, but it was not, maybe for me, atleast at that time_
+_This might seem easy to some, but it was not - maybe for me, atleast at that time_
 
 It began in a young but dense, questioning but well-documented forest of WASM. It took nearly 3 weeks of learning and navigation to finally achieve something.
 
@@ -310,8 +314,7 @@ This effort might even help the official [LlamaEdge scrolls](https://llamaedge.c
 Next to be conquered was a mountain that required that we integrate an HTTP service and the [WASI-NN plugin](https://wasmedge.org/docs/contribute/source/plugin/wasi_nn/) system in a multi-node setup.
 
 A sage was seen there.
-
- -----------------(1)
+  -----------------(1)
 
 This was relatively smoother - Rust designed a prototype `[multi-wasm-pod-demo](https://github.com/vatsalkeshav/multi-pod-demo-wasm)`
 ![Architecture Diagram](./diagrams/multi-wasm-pod-demo-arch.png)
@@ -320,8 +323,7 @@ which later evolved to `[load-bal-llamaedge-demo](https://github.com/vatsalkesha
 _Refer : https://github.com/vatsalkeshav/load-bal-llamaedge-demo_
 
 A chasm was encountered - wasm pods (run with the help of runwasi's wasmedge shim) was not resolving DNS from the service names. At that time, we also wanted a fully automatic k8s style dynamic service management for our backend llama-api-server pods, so we went ahead with a non-WASM pod service-watcher pod utilizing the [kube-rs](https://kube.rs/) client. 
-
-----------------(2)
+  ----------------(2)
 
 ![Architecture Diagram](./diagrams/load-bal-llamaedge-demo-arch.png)
 
@@ -332,8 +334,7 @@ _Refer : https://github.com/vatsalkeshav/load-bal-llamaedge-demo/blob/master/.gi
 On the way back, I asked the sage [@hydai]((https://github.com/hydai)) about how to cross the chasm. He told that it was no chasm, just a shallow foggy area that required the use of latest [tokio_wasi](https://github.com/WasmEdge/tokio) crate and DNS_SERVER environment variable in the yaml deployment configuration. He was right and once again, `nothing beats experience`.
 
 _Refer: https://cloud-native.slack.com/archives/C0215BBK248/p1754631608089259?thread_ts=1754502803.786039&cid=C0215BBK248_
-
------------------ from (1) and (2)
+  ----------------- from (1) and (2)
 
 
 ### __The Pod Tests__
@@ -391,6 +392,7 @@ Some pod tests were introduced in the CI of both `.github/workflows/k3s_ci.yml` 
 
 ### __The Jewel Mines__
 _The mountain was golden!_
+
 Journey itself is home and it had found me my riches before exiting with code 0. Turned out there was a gold mine beneath the mountain - another realm of outworldly flamboyance.
 
 This quest demonstrated a real-world scenario as to how WASM workloads can efficiently replace traditional container/vm/etc. approches of cloud deployment.
@@ -402,6 +404,7 @@ these are the 2 of the *biggest leaps in tech of our decade* and thanks to this 
 
 ### __End of The Beginning__
 _Future Work - Because incomplete are the best stories_
+
 The `service-watcher` from `load-bal-llamaedge-demo` is still run a non-WASM pod because it uses `kube-rs` and `k8s-opensapi` as dependencies which in turn depend on
 ```sh
 reqwest → hyper → tokio → socket2
@@ -412,8 +415,9 @@ While WasmEdge provides forks like `tokio-wasi`, `reqwest-wasi`, `hyper-wasi`, `
 
 ### __Roll of Gratitude__
 
-```
+```sh
 “The mirror reflects not just your image, but the story of your strength, resilience, and grace.” 
+
 - Dalai Lama
 ```
 
