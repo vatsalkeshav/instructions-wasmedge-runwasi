@@ -1,13 +1,52 @@
-# A journey through __*wasm32-wasip1*__
+# A journey  with __*k3s*__ through __*wasm32-wasip1*__
 ## _LFX Mentorship_ : __Use Runwasi with WasmEdge runtime to test multiple WASM apps as cloud services__
 
-`it's a sea of fire - you need to drown to be ashore.`
+### __Table of Content__
+  - The Hook named WASM
+  - The Fellowship
+  - The Forest
+  - The Valley
+  - The Mountain
+  - The Pod Tests
+  - Roll of Gratitude
+  
+---
+
+This is the sum of my LFX Mentorship quest, where I explored the [WASM](https://webassembly.org/) ecosystem and Kubernetes orchestration. I hope this story offers insights for your own cloud-native quests.
+
+```
+Tech is a sea of fire - and you need to drown to be ashore. 
+There's no fire in water, and by the rules, 
+you can't drown without water.
+```
+
+### __The Hook named WASM__
+_There's a hook to every story_
+
+__WASM__ = _WebAssembly_ - just a binary instruction format. It's safe, secure and cross-platform.
+
+WASM's mostly used in Browsers (mostly for __client-side computing__) - as might've been heard - but it's not limited to that - it's other important _non-exahaustive use-cases_ include __edge computing__, __portable AI on the edge__ and __even replacing traditional docker containers__.*
+  - __Client side computing__ :
+    Instead of using the server's computing power, use your local machine's
+    This means less server costs (and more profits :) as well as the users experiencing __near-native performance__ - *that means from pdf tools to IDE's and even high-end games* - all in your browser
+
+  - __Computing on the Edge__ :
+    Similar to client-side-computing but the data is processed at intermediary nodes placed near the client, eg. routers, network towers or traffic cameraes
+
+  - __portable AI on the edge__ :
+    AI models run WASM servers as small as 12mb, eg. _Llamaedge's llama-api-server_. And those are also written in Rust!
+
+  - __WASM containers__
+    _Actually sandboxed environment running WASM binary_
+    One of the biggest tech leaps of our time - When tradional container technology like docker is replaced by _runwasi's wasmedge container runtime_, the image size, its build time and container-boot-up time all get reduced to as low as 90%
+
+_*I didn't know any of that when I applied for this project - but that's a story for another time. I knew some Rust though._
 
 ### __The Fellowship__
-I applied for this quest on the LFX mentorship portal, prepared the pre-test and this journey started. Me, Rust and the wise mentors by my side - Vincent Lin and Yi Huang - were the pilgrims.
+I applied for this quest on the [LFX mentorship portal](https://mentorship.lfx.linuxfoundation.org/#projects_all), prepared the pre-test and this journey started. Me, [Rust](https://www.rust-lang.org/) and the wise mentors by my side - [Vincent Lin](https://github.com/CaptainVincent) and [Yi Huang](https://github.com/0yi0) - were the pilgrims.
 
 *What was the underlying motivation behind all this?*
-With WasmEdge serving as one of Runwasi’s standard runtimes, and as its C++ implemented library continues to evolve, there was a need for a verification process integrated into Runwasi to streamline and validate the stability of both container and cloud environments.
+With [WasmEdge](https://github.com/WasmEdge/WasmEdge) serving as one of [Runwasi’s](https://runwasi.dev/) standard runtimes, and as its C++ implemented library continues to evolve, there was a need for a verification process integrated into Runwasi to streamline and validate the stability of both container and cloud environments.
 
 *What was there to be achieved?*
  1. Research of the relevant codebase, tools, and environment setup procedures.
@@ -19,9 +58,9 @@ With WasmEdge serving as one of Runwasi’s standard runtimes, and as its C++ im
 ### __The Forest__
 _This might seem easy to some, but it was not, maybe for me, atleast at that time_
 
-It began in a young but dense, questioning but well-documented forest of WASM. It took nearly 3 weeks of training and navigation to finally achieve something.
+It began in a young but dense, questioning but well-documented forest of WASM. It took nearly 3 weeks of learning and navigation to finally achieve something.
 
-I started out with systematic baby steps - deploying simple WASM's like `ghcr.io/containerd/runwasi/wasi-demo-app:latest` in Kind and k3s environments as WASM pods. It was my first time learning about pods, let alone WASM pods. A shining knight named k3s joined as the 5th member on this quest from this point on.
+I started out with systematic baby steps - deploying simple WASM's like `ghcr.io/containerd/runwasi/wasi-demo-app:latest` in [Kind](https://kind.sigs.k8s.io/) and [k3s](https://k3s.io/) environments as WASM pods. It was my first time learning about [pods](https://kubernetes.io/docs/concepts/workloads/pods/), let alone WASM pods. A shining knight named k3s joined as the 5th member on this quest from this point on.
 ```yaml
 apiVersion: node.k8s.io/v1
 kind: RuntimeClass
@@ -50,7 +89,10 @@ spec:
         image: ghcr.io/containerd/runwasi/wasi-demo-app:latest
 ```
 
-Around that time, we also explored containerd OCI runtimes like crun and containerd shims like runwasi's wasmedge, wasmer and wasmtime shims for the sake of learning - It felt really great getting code 0 after spending 4 days (and nights) figuring out how to replace k3s's containerd's (k3s uses the containerd that comes bundled with it) OCI runtime runc to crun.
+Around that time, we also explored [OCI runtimes](https://opencontainers.org/) like [crun](https://github.com/containers/crun) and shims like runwasi's wasmedge, wasmer and wasmtime shims - It felt really great getting code 0 after spending 4 days (and nights) figuring out how to replace k3s's containerd's (k3s uses the containerd that comes bundled with it) OCI runtime runc to crun.
+
+Refer : https://github.com/vatsalkeshav/instructions-wasmedge-runwasi/blob/master/docs/crun_with_k3s.md
+
 ```sh
 # this config.toml.tmpl helps k3s generate it's config.toml(existant in same dir) as a copy of config.toml.tmpl
 touch /var/lib/rancher/k3s/agent/etc/containerd/config.toml.tmpl
@@ -97,6 +139,7 @@ state = "/run/k3s/containerd"
 [plugins.'io.containerd.cri.v1.runtime'.containerd.runtimes.runhcs-wcow-process]
   runtime_type = "io.containerd.runhcs.v1"
 
+// this is where crun is defined as the default OCI runtime
 [plugins."io.containerd.cri.v1.runtime".containerd]
   default_runtime_name = "crun"
   [plugins."io.containerd.cri.v1.runtime".containerd.runtimes]
@@ -113,15 +156,15 @@ EOF
 
 Although it didn't directly contribute to the project (which was learned later) but it made me know that
 
-`momentum and attracts more momentum, eventually transforming to code 0's` 
+`momentum attracts more momentum, eventually transforming to code 0's` 
 
 so do whatever you can to gain that. And that had been gained.
-![Architecture Diagram](./diagrams/blog1(1).png)
+![Architecture Diagram](./diagrams/runwasi-working.png)
 
 ### __The Valley__
 _Out of the Forest, into the Valley of k8s_
 
-The valley of Kubernetes was where LlamaEdge's llama-api-server was to be deployed in Kubernetes. Everything was a breeze until a blocker was encountered - it was simple - the pod was hung at `container restarting`. So inititated the Art of Deduction which called to do all sorts of things 
+The valley of [Kubernetes](https://kubernetes.io/) was where [LlamaEdge](https://llamaedge.com/)'s [llama-api-server](https://github.com/LlamaEdge/LlamaEdge/tree/main/llama-api-server) was to be deployed in Kubernetes. Everything was a breeze until a blocker was encountered - it was simple - the pod was hung at `container restarting`. So inititated the process of deduction, which called to do all sorts of things 
  - look at the logs of the llama-api-server pod,
     ```sh
     sudo k3s kubectl logs pod/llama-api-56c566d446-h4n7z
@@ -139,14 +182,14 @@ The valley of Kubernetes was where LlamaEdge's llama-api-server was to be deploy
     (import "wasi_ephemeral_nn" "get_output" (func $_ZN16wasmedge_wasi_nn9generated17wasi_ephemeral_nn10get_output17h743c55da8d36c815E (type 12)))
     (import "wasi_ephemeral_nn" "fini_single" (func $_ZN16wasmedge_wasi_nn9generated17wasi_ephemeral_nn11fini_single17h19c691fd62e58ca8E (type 7)))
     ```
-Still having no clue (no right clue atleast), I asked Vincent and learned that that nothing beats experience -
+Still having no clue (no right clue atleast), I asked Vincent and learned that that _nothing beats experience_ -
 ```sh
 "My guess is that plugin dynamic lib might not have been detected during the execution lifecycle of runwasi when launched via k3s."
 
 - Vincent Lin
 ```
 
-A little more brainstorming and hit and trial - and so the mounting of all the dependencies of `/.wasmedge/plugin/libwasmedgePluginWasiNN.so` (as listed by `ldd`) to the container was done
+A little more brainstorming here and a little hit and trial there - and so the mounting of all the dependencies of `/.wasmedge/plugin/libwasmedgePluginWasiNN.so` (as listed by `ldd`) to the container was done
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -257,37 +300,46 @@ spec:
 ```
 and like that, The project passed the mid-term evaluation with fying colours.
 
-We towed an old friend named GitHub actions to lay rail tracks to here as a CI was written to run daily as a verfication step.
-[link]
+We towed an old friend named [GitHub actions](https://github.com/features/actions) along, to lay the rail tracks to here as a [CI](https://en.wikipedia.org/wiki/Continuous_integration) was written to run daily as a verfication step.
 
-This effort might even help the official LlamaEdge scrolls.
-[link]
+_Refer : https://github.com/second-state/runwasi-wasmedge-demo/pull/1_
+
+This effort might even help the official [LlamaEdge scrolls](https://llamaedge.com/docs/ai-models/llamaedge-kubernetes/) about _Use LlamaEdge in Kubernetes_.
 
 ### __The Mountain__
-Next to be conquered was a mountain that required that we integrate an HTTP service and the WASI-NN plugin system in a multi-node setup.
+Next to be conquered was a mountain that required that we integrate an HTTP service and the [WASI-NN plugin](https://wasmedge.org/docs/contribute/source/plugin/wasi_nn/) system in a multi-node setup.
 
-A sage was seen there. -----------------(1)
+A sage was seen there.
 
-This was relatively smoother - Rust designed a prototype `multi-wasm-pod-demo`
-![Architecture Diagram](./diagrams/blog1(1).png)
-which later evolved to `load-bal-llamaedge-demo` - This demo featured LlamaEdge's llama-api-server (as WASM-pods) runnning different gguf models in a multi-pod environment - all managed by a load-balancer (also a WASM-pod) - assisted by a service-watcher utilizing kube-rs client (a regular non-WASM pod) -
-[link]
+ -----------------(1)
 
-A chasm was encountered - wasm pods (run with the help of runwasi's wasmedge shim) was not resolving dns from the service names. At that time, we also wanted a fully automatic k8s style dynamic service management for our backend llama-api-server pods, so we went ahead with a non-WASM pod service-watcher pod utilizing the kube-rs client. --------------------(2)
+This was relatively smoother - Rust designed a prototype `[multi-wasm-pod-demo](https://github.com/vatsalkeshav/multi-pod-demo-wasm)`
+![Architecture Diagram](./diagrams/multi-wasm-pod-demo-arch.png)
+which later evolved to `[load-bal-llamaedge-demo](https://github.com/vatsalkeshav/load-bal-llamaedge-demo)` - This demo featured LlamaEdge's llama-api-server (as WASM-pods) runnning different [gguf models](https://www.reddit.com/r/LocalLLaMA/comments/1ayd4xr/for_those_who_dont_know_what_different_model/) in a multi-pod environment - all managed by a load-balancer (also a WASM-pod) - assisted by a service-watcher utilizing kube-rs client (a regular non-WASM pod)
 
-![Architecture Diagram](./diagrams/blog1(1).png)
+_Refer : https://github.com/vatsalkeshav/load-bal-llamaedge-demo_
+
+A chasm was encountered - wasm pods (run with the help of runwasi's wasmedge shim) was not resolving DNS from the service names. At that time, we also wanted a fully automatic k8s style dynamic service management for our backend llama-api-server pods, so we went ahead with a non-WASM pod service-watcher pod utilizing the [kube-rs](https://kube.rs/) client. 
+
+----------------(2)
+
+![Architecture Diagram](./diagrams/load-bal-llamaedge-demo-arch.png)
 
 Going the extra mile, rail tracks to its peak were also laid.
-[link]
 
-On the way back, I asked the sage @hydai how to cross the chasm. He told that it was no chasm, just a shallow foggy area that required the use of latest tokio_wasi crate and DNS_SERVER environment variable in the yaml deployment configuration. Once again, `nothing beats experience`.
------------------from (1) and (2)
-[link]
+_Refer : https://github.com/vatsalkeshav/load-bal-llamaedge-demo/blob/master/.github/workflows/CI.yml_
+
+On the way back, I asked the sage [@hydai]((https://github.com/hydai)) about how to cross the chasm. He told that it was no chasm, just a shallow foggy area that required the use of latest [tokio_wasi](https://github.com/WasmEdge/tokio) crate and DNS_SERVER environment variable in the yaml deployment configuration. He was right and once again, `nothing beats experience`.
+
+_Refer: https://cloud-native.slack.com/archives/C0215BBK248/p1754631608089259?thread_ts=1754502803.786039&cid=C0215BBK248_
+
+----------------- from (1) and (2)
+
 
 ### __The Pod Tests__
 _Identity is an illusion, name itself is an analogy and efforts aren't always not boring_
 
-Some pod tests were introduced in the CI of both .github/workflows/k3s_ci.yml from runwasi-wasmedge-demo and .github/workflows/ci.yml from load-bal-llamaedge-demo - thanks to a reliable ally Mr. Bash Scripting.
+Some pod tests were introduced in the CI of both `.github/workflows/k3s_ci.yml` from [runwasi-wasmedge-demo](https://github.com/second-state/runwasi-wasmedge-demo) and `.github/workflows/ci.yml` from [load-bal-llamaedge-demo](https://github.com/vatsalkeshav/load-bal-llamaedge-demo)- thanks to a reliable ally Mr. Bash Scripting.
  - pre-request and post-request pod health checks - generating reports on pod status, container readiness, restarts, events, and resource usage
  - service health check - logs endpoints, service status, service info etc.
  - (only for `load-bal-llamedge-demo`) load-balancer pod logs separated by event markers
@@ -335,12 +387,13 @@ Some pod tests were introduced in the CI of both .github/workflows/k3s_ci.yml fr
 
             echo "Logs appended to: $LOG_FILE (entry $INDEX)"
     ```
-    which is a little interesting
+    which was a little interesting
 
 ### __The Jewel Mines__
 _The mountain was golden!_
 Journey itself is home and it had found me my riches before exiting with code 0. Turned out there was a gold mine beneath the mountain - another realm of outworldly flamboyance.
-This quest demonstrates a real-world scenario as to how WASM workloads can efficiently replace traditional container/vm/etc. approches of cloud deployment.
+
+This quest demonstrated a real-world scenario as to how WASM workloads can efficiently replace traditional container/vm/etc. approches of cloud deployment.
 
  - *__LlamaEdge writing AI servers to run on the edge (in Rust too!)__*
  - *__WasmEdge replacing traditional containers with WASM ones__*
@@ -348,7 +401,7 @@ This quest demonstrates a real-world scenario as to how WASM workloads can effic
 these are the 2 of the *biggest leaps in tech of our decade* and thanks to this mentorship program, I had the opportunity to learn and work with them.
 
 ### __End of The Beginning__
-_Stories are never complete_
+_Future Work - Because incomplete are the best stories_
 The `service-watcher` from `load-bal-llamaedge-demo` is still run a non-WASM pod because it uses `kube-rs` and `k8s-opensapi` as dependencies which in turn depend on
 ```sh
 reqwest → hyper → tokio → socket2
@@ -357,7 +410,8 @@ all of which assume native sockets, threads, and system TLS (Refer cargo tree of
 
 While WasmEdge provides forks like `tokio-wasi`, `reqwest-wasi`, `hyper-wasi`, `socket` etc. - `kube-rs` has hard dependencies on the native crates, so they won’t link without patching `kube-rs` itself. Given this, running the watcher as a traditional pod seems more practical for now but there'd be nothing better if the service-watcher would complile to wasm32-wasip1 target.
 
-### __Never Forgetti__
+### __Roll of Gratitude__
+
 ```
 “The mirror reflects not just your image, but the story of your strength, resilience, and grace.” 
 - Dalai Lama
@@ -367,7 +421,7 @@ My growth here is a reflection of your guidance - your support through challenge
 
 I'm also glad to have the opportunity to be a part of and be helped by the [WasmEdge](https://cloud-native.slack.com/archives/C0215BBK248/p1754502803786039) and [Runwasi](https://cloud-native.slack.com/archives/C04LTPB6Z0V/p1754502430462249) communities.
 
-Thanks [@hydai](https://github.com/hydai) for helping me with the dns resolution (:
+Thanks [@hydai](https://github.com/hydai) for helping me with the DNS resolution (:
 
 Thanks [@steel-bucket](https://github.com/steel-bucket) for being such an helpful dev and a fierce friend.
 
