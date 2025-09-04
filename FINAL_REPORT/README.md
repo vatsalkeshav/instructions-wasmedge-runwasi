@@ -77,4 +77,6 @@ I'm also glad to have the opportunity to be a part of and be helped by the [Wasm
 
 Thanks [@hydai](https://github.com/hydai) for helping me with the dns resolution (:
 
+Thanks [@steel-bucket](https://github.com/steel-bucket) for being a fierce friend and an helpful dev.
+
 Above all, thanks Linux Foundation and CNCF.
